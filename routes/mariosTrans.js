@@ -22,16 +22,21 @@ exports.marioTransform = (app, models) => {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
 
-    try {
-      const newMario = await models.personaje.create({
-        name: req.body.name,
-        powerUp: req.body.powerUp,
-        hability: req.body.hability,
-        imageUrl: req.body.imageUrl,
-      });
-      res.status(201).json(newMario);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+    const marioExist = await models.personaje.exists({ name: req.body.name });
+    if (!marioExist) {
+      try {
+        const newMario = await models.personaje.create({
+          name: req.body.name,
+          powerUp: req.body.powerUp,
+          hability: req.body.hability,
+          imageUrl: req.body.imageUrl,
+        });
+        res.status(201).json(newMario);
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    } else {
+      return res.json({ message: "El elemento ya existe" });
     }
   });
 
