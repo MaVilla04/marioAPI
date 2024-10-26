@@ -22,20 +22,52 @@ exports.marioTransform = (app, models) => {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
 
-    const mario = {
-      name: req.body.name,
-      powerUp: req.body.powerUp,
-      hability: req.body.hability,
-      imageUrl: req.body.imageUrl,
-    };
-
     try {
-      const newMario = await models.personaje.create(mario);
+      const newMario = await models.personaje.create({
+        name: req.body.name,
+        powerUp: req.body.powerUp,
+        hability: req.body.hability,
+        imageUrl: req.body.imageUrl,
+      });
       res.status(201).json(newMario);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   });
 
-  //app.put(`${rutaBase}/:id`, async (req, res) => {});
+  app.put(`${rutaBase}/update/:id`, async (req, res) => {
+    try {
+      let mario = await models.personaje.findById(req.params.id);
+      if (!mario) {
+        return res
+          .status(404)
+          .json({ message: "Transformación no encontrada" });
+      }
+
+      console.log(typeof mario);
+
+      if (
+        !req.body.name ||
+        !req.body.powerUp ||
+        !req.body.hability ||
+        !req.body.imageUrl
+      ) {
+        return res.status(400).json({ message: "Faltan campos obligatorios" });
+      }
+
+      mario.name = req.body.name;
+      mario.powerUp = req.body.powerUp;
+      mario.hability = req.body.hability;
+      mario.imageUrl = req.body.imageUrl;
+
+      console.log(typeof mario);
+
+      const updatedMario = await mario.save();
+      res.json(updatedMario);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  //app.delete(`${rutaBase}/:id`, async (req, res) => {});
 };
