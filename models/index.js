@@ -6,7 +6,7 @@ mongo().catch((err) => console.log(err));
 
 async function mongo() {
   await mongoose.connect(`${process.env.MONGODB}`);
-  console.log("Db connected!");
+  console.log("MongoDB is connected!");
 }
 
 let jsonModels = {
