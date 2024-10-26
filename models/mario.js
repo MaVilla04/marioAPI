@@ -1,9 +1,9 @@
 exports.personaje = (odm) => {
   const personajeSchema = new odm.Schema({
-    name: String,
-    item: String,
-    hability: String,
-    image: String,
+    name: { type: String, required: true },
+    item: { type: String },
+    hability: { type: String },
+    imageUrl: { type: String },
   });
 
   return odm.model("personaje", personajeSchema);
