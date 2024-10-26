@@ -1,4 +1,5 @@
 const express = require("express");
+const routes = require("./routes/mariosTrans");
 const app = express();
 const dotenv = require("dotenv");
 
@@ -59,7 +60,7 @@ const transformations = [
 ];
 
 app.use(express.json());
-routes.heroesRoutes(app, transformations);
+routes.marioTransform(app, models);
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${process.env.PORT}`);
