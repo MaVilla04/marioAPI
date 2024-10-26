@@ -9,7 +9,7 @@ const { models } = require("./models");
 const transformations = [
   {
     name: "Fire Mario",
-    item: "Fire Flower",
+    powerUp: "Fire Flower",
     hability: "Throw fireballs",
   },
   {

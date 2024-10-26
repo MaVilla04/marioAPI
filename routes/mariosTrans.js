@@ -44,8 +44,6 @@ exports.marioTransform = (app, models) => {
           .json({ message: "Transformación no encontrada" });
       }
 
-      console.log(typeof mario);
-
       if (
         !req.body.name ||
         !req.body.powerUp ||
@@ -60,8 +58,6 @@ exports.marioTransform = (app, models) => {
       mario.hability = req.body.hability;
       mario.imageUrl = req.body.imageUrl;
 
-      console.log(typeof mario);
-
       const updatedMario = await mario.save();
       res.json(updatedMario);
     } catch (error) {
@@ -69,5 +65,19 @@ exports.marioTransform = (app, models) => {
     }
   });
 
-  //app.delete(`${rutaBase}/:id`, async (req, res) => {});
+  app.delete(`${rutaBase}/delete/:id`, async (req, res) => {
+    try {
+      let mario = await models.personaje.findById(req.params.id);
+      if (!mario) {
+        return res
+          .status(404)
+          .json({ message: "Transformación no encontrada" });
+      }
+
+      const deletedMario = await models.personaje.deleteOne(mario);
+      res.json(deletedMario);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 };
