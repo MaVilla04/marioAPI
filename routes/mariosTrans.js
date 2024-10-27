@@ -5,8 +5,17 @@ exports.marioTransform = (
   models,
   authenticateToken,
   generateAccessToken,
-  jwt
+  jwt,
+  io
 ) => {
+  io.on("connection", (socket) => {
+    console.log("Usuario conectado");
+
+    socket.on("disconnect", () => {
+      console.log("Usuario desconectado");
+    });
+  });
+
   app.get(`${rutaBase}`, async (req, res) => {
     try {
       const transformations = await models.personaje.find().sort({ _id: -1 });
@@ -36,6 +45,7 @@ exports.marioTransform = (
           imageUrl: req.body.imageUrl,
         });
         res.status(201).json(newMario);
+        //server.emit("newMario", newMario);
       } catch (err) {
         res.status(500).json({ message: err.message });
       }
@@ -85,6 +95,7 @@ exports.marioTransform = (
 
       const deletedMario = await models.personaje.deleteOne(mario);
       res.json(deletedMario);
+      //server.emit("deletedMario", deletedMario);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
