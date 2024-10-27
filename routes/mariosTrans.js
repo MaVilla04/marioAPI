@@ -1,8 +1,12 @@
-const { personaje } = require("../models/mario");
-
 const rutaBase = "/marioTransformations";
 
-exports.marioTransform = (app, models) => {
+exports.marioTransform = (
+  app,
+  models,
+  authenticateToken,
+  generateAccessToken,
+  jwt
+) => {
   app.get(`${rutaBase}`, async (req, res) => {
     try {
       const transformations = await models.personaje.find().sort({ _id: -1 });
@@ -12,7 +16,7 @@ exports.marioTransform = (app, models) => {
     }
   });
 
-  app.post(`${rutaBase}/new`, async (req, res) => {
+  app.post(`${rutaBase}/new`, authenticateToken, async (req, res) => {
     if (
       !req.body.name ||
       !req.body.powerUp ||
@@ -40,7 +44,7 @@ exports.marioTransform = (app, models) => {
     }
   });
 
-  app.put(`${rutaBase}/update/:id`, async (req, res) => {
+  app.put(`${rutaBase}/update/:id`, authenticateToken, async (req, res) => {
     try {
       let mario = await models.personaje.findById(req.params.id);
       if (!mario) {
@@ -70,7 +74,7 @@ exports.marioTransform = (app, models) => {
     }
   });
 
-  app.delete(`${rutaBase}/delete/:id`, async (req, res) => {
+  app.delete(`${rutaBase}/delete/:id`, authenticateToken, async (req, res) => {
     try {
       let mario = await models.personaje.findById(req.params.id);
       if (!mario) {
@@ -83,6 +87,35 @@ exports.marioTransform = (app, models) => {
       res.json(deletedMario);
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post(`${rutaBase}/newUser`, async (req, res) => {
+    if (!req.body.name || !req.body.email) {
+      return res.status(400).json({ message: "Faltan campos obligatorios" });
+    }
+
+    const userExists = await models.user.exists({ name: req.body.name });
+    if (!userExists) {
+      try {
+        const newUser = await models.user.create({
+          name: req.body.name,
+          email: req.body.email,
+        });
+
+        let jwtSignature = await generateAccessToken(
+          { email: newUser.email },
+          jwt
+        );
+
+        res
+          .status(201)
+          .json({ name: newUser.name, email: newUser, token: jwtSignature });
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    } else {
+      return res.json({ message: "El usuario ya existe" });
     }
   });
 };

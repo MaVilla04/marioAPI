@@ -1,6 +1,7 @@
 // db config
 const mongoose = require("mongoose");
 const { personaje } = require("./mario.js");
+const { user } = require("./user.js");
 
 mongo().catch((err) => console.log(err));
 
@@ -11,6 +12,7 @@ async function mongo() {
 
 let jsonModels = {
   personaje: personaje(mongoose),
+  user: user(mongoose),
 };
 
 exports.models = jsonModels;

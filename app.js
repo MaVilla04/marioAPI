@@ -2,6 +2,8 @@ const express = require("express");
 const routes = require("./routes/mariosTrans");
 const app = express();
 const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+const { authenticateToken, generateAccessToken } = require("./helpers/auth");
 
 dotenv.config();
 const { models } = require("./models");
@@ -60,7 +62,7 @@ const transformations = [
 ];
 
 app.use(express.json());
-routes.marioTransform(app, models);
+routes.marioTransform(app, models, authenticateToken, generateAccessToken, jwt);
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${process.env.PORT}`);
