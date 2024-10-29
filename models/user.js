@@ -1,11 +1,10 @@
 exports.user = (odm) => {
   const userSchema = new odm.Schema({
     name: { type: String, required: true },
-    email: {
+    password: {
       type: String,
-      minLength: 10,
+      minLength: 6,
       required: true,
-      lowercase: true,
     },
   });
 
