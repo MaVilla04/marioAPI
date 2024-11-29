@@ -1,6 +1,6 @@
 const rutaBase = "/marioTransformations";
 const bcrypt = require("bcryptjs");
-const { json } = require("express");
+const { ioSocket } = require("../rtc/server");
 
 exports.marioTransform = (
   app,
@@ -8,16 +8,8 @@ exports.marioTransform = (
   authenticateToken,
   generateAccessToken,
   jwt,
-  io
+  initSocket
 ) => {
-  io.on("connection", (socket) => {
-    console.log("Usuario conectado");
-
-    socket.on("disconnect", () => {
-      console.log("Usuario desconectado");
-    });
-  });
-
   app.get(`${rutaBase}`, async (req, res) => {
     try {
       const transformations = await models.personaje.find().sort({ _id: -1 });
@@ -47,7 +39,7 @@ exports.marioTransform = (
           imageUrl: req.body.imageUrl,
         });
         res.status(201).json(newMario);
-        //server.emit("newMario", newMario);
+        initSocket.emit("newMario", newMario);
       } catch (err) {
         res.status(500).json({ message: err.message });
       }
@@ -97,7 +89,7 @@ exports.marioTransform = (
 
       const deletedMario = await models.personaje.deleteOne(mario);
       res.json(deletedMario);
-      //server.emit("deletedMario", deletedMario);
+      initSocket.emit("deletedMario", req.params.id);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -138,7 +130,6 @@ exports.marioTransform = (
         return res.status(404).json({ message: "El usuario no existe" });
       }
       const userExists = await models.user.findById(userID);
-      console.log("contraseña: ", await bcrypt.hash(password, 10));
       const validPass = await bcrypt.compare(password, userExists.password);
       if (!validPass) {
         return res.status(401).json({ message: "contraseña incorrecta" });
@@ -148,6 +139,7 @@ exports.marioTransform = (
         jwt
       );
       res.json({ message: "Has iniciado correctamente", token });
+      initSocket.on("connection", userExists);
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "error al iniciar sesión", error });

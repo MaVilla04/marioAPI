@@ -1,14 +1,11 @@
-const http = require("http");
+const { Server } = require("socket.io");
 
-exports.ioSocket = (app) => {
-  const server = http.createServer(app);
-
-  const Server = require("socket.io")(server, {
+exports.ioSocket = (server) => {
+  const io = new Server(server, {
     cors: {
-      origin: ["*", "localhost", "http://localhost, http://localhost:8081"],
-      methods: ["GET", "POST"],
+      origin: "*",
     },
-  }).listen(8081);
+  });
 
-  return Server;
+  return io;
 };
