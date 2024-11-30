@@ -1,5 +1,3 @@
-const io = require("../rtc/server");
-
 module.exports = (io) => {
   io.on("connection", (socket) => {
     console.log(`Cliente conectado: ${socket.id}`);

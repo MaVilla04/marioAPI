@@ -1,14 +1,12 @@
 const rutaBase = "/marioTransformations";
 const bcrypt = require("bcryptjs");
-const { ioSocket } = require("../rtc/server");
 
 exports.marioTransform = (
   app,
   models,
   authenticateToken,
   generateAccessToken,
-  jwt,
-  initSocket
+  jwt
 ) => {
   app.get(`${rutaBase}`, async (req, res) => {
     try {
@@ -39,7 +37,6 @@ exports.marioTransform = (
           imageUrl: req.body.imageUrl,
         });
         res.status(201).json(newMario);
-        initSocket.emit("newMario", newMario);
       } catch (err) {
         res.status(500).json({ message: err.message });
       }
@@ -89,7 +86,6 @@ exports.marioTransform = (
 
       const deletedMario = await models.personaje.deleteOne(mario);
       res.json(deletedMario);
-      initSocket.emit("deletedMario", req.params.id);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -139,7 +135,6 @@ exports.marioTransform = (
         jwt
       );
       res.json({ message: "Has iniciado correctamente", token });
-      initSocket.on("connection", userExists);
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "error al iniciar sesión", error });

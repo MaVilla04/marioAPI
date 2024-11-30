@@ -11,7 +11,6 @@ dotenv.config();
 const { models } = require("./models");
 const { ioSocket } = require("./rtc/server");
 const initSocket = require("./rtc/socket");
-const { Server } = require("socket.io");
 
 const transformations = [
   {
